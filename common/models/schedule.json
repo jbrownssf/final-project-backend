@@ -1,0 +1,40 @@
+{
+  "name": "Schedule",
+  "plural": "Schedules",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "state": {
+      "type": "string",
+      "required": true
+    },
+    "groupId": {
+      "type": "string",
+      "required": true
+    },
+    "schedule": {
+      "type": [
+        "any"
+      ],
+      "required": true
+    },
+    "note": {
+      "type": "string"
+    },
+    "createDate": {
+      "type": "date",
+      "required": true
+    },
+    "assignedDate": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

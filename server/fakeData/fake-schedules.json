@@ -1,0 +1,113 @@
+[
+    {
+        "state": "saved",
+        "groupId": "abc",
+        "schedule": [
+            [
+                "Maze",
+                [
+                    [
+                        "Maze Maze",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "1"
+                    ],
+                    [
+                        "Maze Maze",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                         "2"
+                    ],
+                    [
+                        "Drums",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "3"
+                    ],
+                    [
+                        "Goat Head",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "4"
+                    ]
+                ]
+            ]
+        ],
+        "id": "123",
+        "note": "Maybe next time World!"
+    },
+    {
+        "state": "published",
+        "groupId": "abc",
+        "schedule": [
+            [
+                "Maze",
+                [
+                    [
+                        "Maze Maze",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "5"
+                    ],
+                    [
+                        "Maze Maze",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "6"
+                    ],
+                    [
+                        "Drums",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "7"
+                    ],
+                    [
+                        "Goat Head",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "8"
+                    ]
+                ]
+            ]
+        ],
+        "id": "321",
+        "note": "Goodbye World!"
+    },
+    {
+        "state": "saved",
+        "groupId": "abc",
+        "schedule": [
+            [
+                "Maze",
+                [
+                    [
+                        "Maze Maze",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "9"
+                    ],
+                    [
+                        "Maze Maze",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "10"
+                    ],
+                    [
+                        "Drums",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "11"
+                    ],
+                    [
+                        "Goat Head",
+                        "Thu, 01 Jan 1970 20:59:00 GMT",
+                        "Thu, 02 Jan 1970 20:59:00 GMT",
+                        "4"
+                    ]
+                ]
+            ]
+        ],
+        "id": "124563",
+        "note": "Hello World!"
+    }
+]

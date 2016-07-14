@@ -1,0 +1,35 @@
+{
+  "name": "Members",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "memberId": {
+      "type": "string",
+      "required": true
+    },
+    "orgId": {
+      "type": "string",
+      "required": true
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "default": "pending"
+    },
+    "permissionlvl": {
+      "type": "string",
+      "required": true,
+      "default": "member"
+    },
+    "display_name": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
