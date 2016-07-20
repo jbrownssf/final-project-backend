@@ -7,7 +7,7 @@ module.exports = function(app) {
 	// 	jsonArr[i].createDate = new Date();
 	// 	jsonArr[i].assignedDate = new Date();
 	// }
-	// // Schedule.destroyAll();
+	// Schedule.destroyAll();
 
 	// Schedule.create(jsonArr, function(err, record) {
 	// 	if (err) return console.log(err);

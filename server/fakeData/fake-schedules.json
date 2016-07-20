@@ -1,7 +1,7 @@
 [
     {
         "state": "saved",
-        "groupId": "abc",
+        "groupId": "5783eaac792fa2e70ea0cd55",
         "schedule": [
             [
                 "Maze",
@@ -38,7 +38,7 @@
     },
     {
         "state": "published",
-        "groupId": "abc",
+        "groupId": "5783eaac792fa2e70ea0cd55",
         "schedule": [
             [
                 "Maze",
@@ -75,7 +75,7 @@
     },
     {
         "state": "saved",
-        "groupId": "abc",
+        "groupId": "5783eaac792fa2e70ea0cd55",
         "schedule": [
             [
                 "Maze",
