@@ -1,31 +1,28 @@
-var reqMemship = require('../../custom-apis/organizations/req-memship.js');
+var reqJoin = require('../../custom-apis/organizations/req-join.js');
 var reqHandle = require('../../custom-apis/organizations/req-handle.js');
 module.exports = function(Organizations) {
-    reqMemship(Organizations);
+    reqJoin(Organizations);
     reqHandle(Organizations);
+    
+    //User can only get it's own inputs
+    // Organizations.beforeRemote('join', function(context, instance, next) {
+    //     var Members = Organizations.app.models.Members;
+    //     checkMemsUsers(context.req.accessToken.userId);
+    //     function checkMemsUsers(userId) {
+    //         Members.find({"where":{"memberId": userId, "orgId": context.args.filter.where.groupId}}, function(memErr, memRes) {
+    //             if(memErr)
+    //                 return next(memErr);
+    //             if(memRes.length === 0 || memRes[0].__data.status === 'pending' || memRes[0].__data.status === 'declined') {
+    //                 var err = new Error("Unauthorized to perform this action");
+    //                 err.status = 401;
+    //                 next(err);
+    //             } else {
+    //                 next();
+    //             }
+    //         });
+    //     }
+    // });
     
     
     
 };
-
-
-
-/*
-    Organization.remoteMethod('join', {
-        http: {path: '/join', verb: 'POST'},
-        accepts: [
-            {arg: 'organizationId', type: 'string', description: 'The id that matches the organization you want to join.'},
-            {arg: 'userId', type: 'string', description: 'The id for the user requesting to join an organization.'},
-        ],
-        // notes: "Use this api to join an organization.",
-        description: "Request to join an organization.",
-        returns: {type: 'object', root: true}
-    });
-    Organization.join = function(orgId, userId, cb) {
-        Organization.findOne({
-            where: {
-                id: orgId
-            }
-        });
-        cb(0, passedId);
-    };*/

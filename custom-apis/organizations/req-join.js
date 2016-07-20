@@ -24,7 +24,6 @@ module.exports = function(Organization) {
                 var newMembers = {
                     memberId: userId,
                     status: "pending",
-                    permissionlvl: "member",
                     orgId: orgId
                 };
                 if(nickName) newMembers.nickName = nickName;
