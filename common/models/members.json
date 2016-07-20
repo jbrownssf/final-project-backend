@@ -19,11 +19,6 @@
       "required": true,
       "default": "pending"
     },
-    "permissionlvl": {
-      "type": "string",
-      "required": true,
-      "default": "member"
-    },
     "display_name": {
       "type": "string"
     }

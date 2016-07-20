@@ -18,7 +18,7 @@ module.exports = function(Members) {
     Members.remoteMethod('getStatuses', {
         http: {path: '/getStatuses', verb: 'GET'},
         // notes: "If you pass in the 'requestId' you do not need the other two fields.",
-        description: "Handle a request to join an Organizations.",
+        description: ".",
         accepts: [
             {arg: 'req', type: 'object', 'http': {source: 'req'}},
             {arg: 'res', type: 'object', 'http': {source: 'res'}}
@@ -27,6 +27,11 @@ module.exports = function(Members) {
     });
     Members.getStatuses = function(req, res, cb) {
         var Organizations = Members.app.models.Organizations;
+        if(req.accessToken.userId !== req.query.filter.where.memberId) {
+            var err = new Error('You are not authorized get other people\'s statuses.');
+            err.statusCode = 500;
+            return cb(err);
+        }
         Members.find(req.query.filter, function(err, response) {
             if(err) return cb(err);
             async.forEachOf(response, function(index, i, next) {
@@ -41,10 +46,7 @@ module.exports = function(Members) {
                         response[i].orgName = orgRes.name;
                         next();
                     }
-                    
                 });
-                
-                
             }, function(err) {
             	if(err) {
             		var error = new Error('async.forEach operation failed');
