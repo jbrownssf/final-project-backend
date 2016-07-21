@@ -51,7 +51,6 @@ module.exports = function(Members) {
                                 //any member of the company can see this
                                 response[i].firstName = memberRes.firstName;
                                 response[i].lastName = memberRes.lastName;
-                                response[i].username = memberRes.username;
 
                                 //only owners/admins can see this
                                 if (findRes.__data.status === 'admin' || findRes.__data.status === 'owner') {
