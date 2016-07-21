@@ -82,9 +82,9 @@ module.exports = function(Organizations) {
                     return cb(createMemErr);
                   cb(0, 'Created the organization and tied the owner to it.');
                   
-                })
-              })
-            })
+                });
+              });
+            });
         });
     };
 };
