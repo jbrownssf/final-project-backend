@@ -9,7 +9,7 @@
     "status": {
       "type": "string",
       "required": true,
-      "default": "pending"
+      "default": "open"
     },
     "name": {
       "type": "string",
@@ -57,6 +57,13 @@
       "principalId": "$authenticated",
       "permission": "ALLOW",
       "property": "handleRequest"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "makeOrg"
     }
   ],
   "methods": {}
