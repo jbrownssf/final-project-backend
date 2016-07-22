@@ -34,7 +34,8 @@ module.exports = function(Members) {
             if (err) return cb(err);
             Members.findOne({
                 where: {
-                    memberId: req.accessToken.userId
+                    memberId: req.accessToken.userId,
+                    orgId: req.query.filter.where.orgId
                 }
             }, function(findErr, findRes) {
                 if (findErr) return cb(findErr);
@@ -53,7 +54,7 @@ module.exports = function(Members) {
                                 response[i].lastName = memberRes.lastName;
 
                                 //only owners/admins can see this
-                                if (findRes.__data.status === 'admin' || findRes.__data.status === 'owner') {
+                                if (findRes.__data.status === 'admin' || findRes.__data.status === 'owner' || memberRes.__data.id.toString() === req.accessToken.userId) {
                                     response[i].email = memberRes.email;
                                     response[i].cellphone = memberRes.cellphone;
                                     // response[i].address = memberRes.address; // ???
