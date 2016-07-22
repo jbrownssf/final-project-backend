@@ -26,21 +26,22 @@ module.exports = function(Organization) {
                     status: "pending",
                     orgId: orgId
                 };
-                if(nickName) newMembers.nickName = nickName;
                 Members.findOne({
                     where: {
                         memberId: userId,
                         orgId: orgId
                     }
                 }, function(findMemErr, findMemRes) {
-                    if(findMemErr || findMemRes) {
-                        var errString = findMemRes ? "You have already applied for this company and the status is " + findMemRes.__data.status + '.': 
-                            "There was a problem finding the user";
-                        var error = new Error(errString);
+                    if(findMemErr) {
+                        var error = new Error("There was a problem finding the user");
                         error.statusCode = 503;
                         callback(error);
                     } else {
-                        Members.create(newMembers, function(addMemErr, addMemRes) {
+                        if(findMemRes) {
+                            newMembers = findMemRes.__data;
+                            newMembers.nickName = nickName;
+                        }
+                        Members.upsert(newMembers, function(addMemErr, addMemRes) {
                             if(addMemErr) {
                                 var error = new Error('Cannot add ' + userId + ' to ' + orgId);
                                 error.statusCode = 503;

@@ -24,7 +24,6 @@ module.exports = function(SsfUsers) {
                     err.status = 401;
                     next(err);
                 } else {
-                    delete context.args.data.id;
                     testLogin(userRes.__data.email, context.args.data.password);
                 }
             });
@@ -34,6 +33,10 @@ module.exports = function(SsfUsers) {
                 if(loginErr)
                     return next(loginErr);
                 delete context.args.data.oldPassword;
+                for(var i in context.args.data) {
+                    if(i !== 'firstName' && i !== 'lastName' && i !== 'email' && i !== 'cellphone')
+                        delete context.args.data[i];
+                }
                 next();
             });
         }
