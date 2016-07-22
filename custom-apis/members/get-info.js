@@ -39,6 +39,11 @@ module.exports = function(Members) {
                 }
             }, function(findErr, findRes) {
                 if (findErr) return cb(findErr);
+                if(!findRes) {
+                    var newErr = new Error('You are not already a member.');
+                    newErr.statusCode = 503;
+                    return cb(newErr);
+                }
                 async.forEachOf(response, function(index, i, next) {
                         SSFUsers.findOne({
                             where: {
