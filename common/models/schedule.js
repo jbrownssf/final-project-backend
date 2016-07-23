@@ -53,16 +53,18 @@ module.exports = function(Schedule) {
 
     Schedule.afterRemote('findOne', function(ctx, res, cb) {
         var userId = ctx.req.accessToken.userId;
+        var didChange = false;
         for (var i in res.__data.schedule) {
             for (var j = 1; j < res.__data.schedule[i].length; j++) {
                 for (var k in res.__data.schedule[i][j]) {
                     if (res.__data.schedule[i][j][k][3] === userId && !res.__data.schedule[i][j][k][4]) {
                         res.__data.schedule[i][j][k][4] = true;
-                        return updateSched();
+                        didChange = true;
                     }
                 }
             }
         }
+        if(didChange) return updateSched();
         function updateSched() {
             Schedule.upsert(res.__data, function(upsertErr, upsertRes) {
                 if(upsertErr) return cb(upsertErr);
