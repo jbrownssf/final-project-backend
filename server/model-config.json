@@ -47,5 +47,9 @@
   "Members": {
     "dataSource": "mongo",
     "public": true
+  },
+  "History": {
+    "dataSource": "mongo",
+    "public": true
   }
 }

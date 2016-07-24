@@ -1,0 +1,36 @@
+{
+  "name": "History",
+  "plural": "History",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "effectedId": {
+      "type": "string"
+    },
+    "affectorId": {
+      "type": "string",
+      "required": true
+    },
+    "relatedOrg": {
+      "type": "string"
+    },
+    "otherInfo": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string",
+      "required": true
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
