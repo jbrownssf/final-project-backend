@@ -96,16 +96,17 @@ module.exports = function(Schedule) {
     Schedule.afterRemote('upsert', function(ctx, nothing, next) {
         var History = Schedule.app.models.History;
         if (!ctx.req.body.id) {
-            console.log('hit new schedule');
             //new schedule
             var histArr = [];
-            histArr.push({
-                affectorId: ctx.req.accessToken.userId,
-                relatedOrg: ctx.args.data.groupId,
-                fromTo: [null, ctx.args.data.state],
-                code: 11,
-                date: new Date()
-            });
+            if(ctx.args.data.state === 'published') {
+                histArr.push({
+                    affectorId: ctx.req.accessToken.userId,
+                    relatedOrg: ctx.args.data.groupId,
+                    fromTo: [null, ctx.args.data.state],
+                    code: 11,
+                    date: new Date()
+                });
+            }
 
             // if(!ctx.args.data.schedule) return next(new Error('schedule is undefined.'));
             // if(typeof ctx.args.data.schedule !== 'object') return next(new Error('schedule is not an array.'));
@@ -135,10 +136,8 @@ module.exports = function(Schedule) {
                 }
             }
 
-            History.upsert(histArr, function(newErr, newRes) {
-                if (newErr) console.log('error');
-                next();
-            });
+            History.upsert(histArr)
+            next();
         }
         else {
             next();
@@ -152,9 +151,7 @@ module.exports = function(Schedule) {
         checkMemsUsers(ctx.req.accessToken.userId);
 
         function finishSchedUpdate(tempArr) {
-            History.create(tempArr, function(newErr, newRes) {
-                if (newErr) console.log('error');
-            });
+            History.create(tempArr);
             next();
         }
         
@@ -176,7 +173,6 @@ module.exports = function(Schedule) {
                             if (!ctx.args.data.schedule[i][j][k]) return next(new Error('schedule[' + i + '][' + j + '][' + k + '] is undefined.'));
                             if (typeof ctx.args.data.schedule[i][j][k] !== 'object') return next(new Error('schedule[' + i + '][' + j + '][' + k + '] is not an array.'));
                             if (ctx.args.data.schedule[i][j][k][0] === 'NaN') {
-                                console.log('deleted', ctx.args.data.schedule[i][j][k]);
                                 ctx.args.data.schedule[i][j].splice(k, 1);
                             }
                             else {
@@ -221,18 +217,22 @@ module.exports = function(Schedule) {
                         }
                         if (findRes.__data.state !== ctx.args.data.state) {
                             //state changed on schedule
-                            console.log('hit state change on schedule');
+                            if(findRes.__data.state === 'published' && ctx.args.data.state === 'saved') 
+                                return new Error('You cannot unpublish a schedule once it\'s been published.');
                             historyArr.push({
                                 affectorId: userId,
                                 relatedOrg: ctx.args.data.groupId,
-                                fromTo: [findRes.__data.state, ctx.args.data.state, ctx.args.data.id],
+                                fromTo: [
+                                    ctx.args.data.state === 'published' ? null : findRes.__data.state,
+                                    ctx.args.data.state,
+                                    ctx.args.data.id
+                                ],
                                 code: 11,
                                 date: new Date()
                             });
                         }
                         if (findRes.__data.assignedDate.toString() !== new Date(ctx.args.data.assignedDate).toString()) {
                             //assignedDate changed on schedule
-                            console.log('hit assignedDate change on schedule');
                             historyArr.push({
                                 affectorId: userId,
                                 relatedOrg: ctx.args.data.groupId,
@@ -243,7 +243,6 @@ module.exports = function(Schedule) {
                         }
                         if (findRes.__data.note !== ctx.args.data.note) {
                             //note changed on schedule
-                            console.log('hit note change on schedule');
                             historyArr.push({
                                 affectorId: userId,
                                 relatedOrg: ctx.args.data.groupId,
@@ -257,7 +256,7 @@ module.exports = function(Schedule) {
                         for (var i = ctx.args.data.schedule.length - 1; i >= 0; i--) {
                             if (!ctx.args.data.schedule[i]) return next(new Error('schedule[' + i + '] is undefined.'));
                             if (typeof ctx.args.data.schedule[i] !== 'object') return next(new Error('schedule[' + i + '] is not an array.'));
-                            if (ctx.args.data.schedule[i][0] === 'NaN') {
+                            if (ctx.args.data.state === 'deleted' || ctx.args.data.schedule[i][0] === 'NaN') {
                                 //deleted section
                                 historyArr.push({
                                     affectorId: userId,
@@ -287,7 +286,6 @@ module.exports = function(Schedule) {
                                 if (findRes.__data.schedule && findRes.__data.schedule[i]) {
                                     if (findRes.__data.schedule[i][0] !== ctx.args.data.schedule[i][0]) {
                                         //section name changed on schedule
-                                        console.log('hit section name change on schedule');
                                         historyArr.push({
                                             affectorId: userId,
                                             relatedOrg: ctx.args.data.groupId,
@@ -318,11 +316,9 @@ module.exports = function(Schedule) {
                                 var hasChanged;
                                 for (var a = ctx.args.data.schedule[i].length - 1; a > 0; a--) {
                                     if (ctx.args.data.schedule[i][a]) {
-                                        // console.log(ctx.args.data.schedule[i][a]);
                                         for (var b = ctx.args.data.schedule[i][a].length - 1; b >= 0; b--) {
                                             if (!ctx.args.data.schedule[i][a][b]) return next(new Error('schedule[' + i + '][' + a + '][' + b + '] is undefined.'));
-                                            if (ctx.args.data.schedule[i][a][b][0] === 'NaN') {
-                                                console.log('hit deleted spot');
+                                            if (ctx.args.data.state === 'deleted' || ctx.args.data.schedule[i][a][b][0] === 'NaN') {
                                                 //original spot
                                                 if (findRes.__data.schedule && findRes.__data.schedule[i] && findRes.__data.schedule[i][a] && findRes.__data.schedule[i][a][b] && findRes.__data.schedule[i][a][b][3]) {
                                                     historyArr.push({

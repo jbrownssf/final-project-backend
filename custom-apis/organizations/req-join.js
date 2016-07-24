@@ -1,6 +1,7 @@
 module.exports = function(Organization) {
     Organization.remoteMethod('join', {
         accepts: [
+            {arg: 'req', type: 'object', 'http': {source: 'req'}},
             {arg: "userId", required: true, type: "string", description: "The user's ID who wants to join an organization."},
             {arg: "organizationId", required: true, type: "string", description: "The organization's ID that the user wants to join."},
             {arg: "nickName", type: "string", description: "The organization's ID that the user wants to join."},
@@ -8,8 +9,9 @@ module.exports = function(Organization) {
         http: {path: '/join', verb: "POST"},
         returns: {type: 'object', root: true}
     });
-    Organization.join = function(userId, orgId, nickName, callback) {
+    Organization.join = function(req, userId, orgId, nickName, callback) {
         var Members = Organization.app.models.Members;
+        var History = Organization.app.models.History;
         Organization.findOne({
             where: {
                 id: orgId
@@ -37,6 +39,29 @@ module.exports = function(Organization) {
                         error.statusCode = 503;
                         callback(error);
                     } else {
+                        if(!findMemRes) {
+                            History.create({
+                                effectedId: userId,
+                                affectorId: req.accessToken.userId,
+                                relatedOrg: orgId,
+                                fromTo: [
+                                    null,
+                                    'pending'
+                                ],
+                                code: 5,
+                                date: new Date()
+                            });
+                        }
+                        History.create({
+                            affectorId: req.accessToken.userId,
+                            relatedOrg: orgId,
+                            fromTo: [
+                                !findMemRes ? null : findMemRes.nickName,
+                                nickName
+                            ],
+                            code: 4,
+                            date: new Date()
+                        });
                         if(findMemRes) {
                             newMembers = findMemRes.__data;
                             newMembers.nickName = nickName;

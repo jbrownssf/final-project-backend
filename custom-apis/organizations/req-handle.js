@@ -31,6 +31,7 @@ module.exports = function(Organizations) {
     Organizations.handleRequest = function(req, requestId, status, cb) {
         var Members = Organizations.app.models.Members;
         var userId = req.accessToken.userId;
+        var History = Organizations.app.models.History;
         //checks if the id requested exists or not
         Members.findOne({
             where: {
@@ -58,6 +59,17 @@ module.exports = function(Organizations) {
                         return cb(findTwoErr);
                     }
                     else {
+                        History.create({
+                            effectedId: reqFindRes.__data.memberId,
+                            affectorId: userId,
+                            relatedOrg: reqFindRes.__data.orgId,
+                            fromTo: [
+                                reqFindRes.__data.status,
+                                status
+                            ],
+                            code: 5,
+                            date: new Date()
+                        });
                         Members.updateAll({
                             id: requestId
                         }, {
