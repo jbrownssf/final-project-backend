@@ -9,7 +9,7 @@ module.exports = function(app) {
 	// 	jsonArr[i].assignedDate = new Date();
 	// }
 	// Schedule.destroyAll();
-	History.destroyAll();
+	// History.destroyAll();
 
 	// Schedule.create(jsonArr, function(err, record) {
 	// 	if (err) return console.log(err);

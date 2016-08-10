@@ -74,6 +74,7 @@ module.exports = function(Schedule) {
                             affectorId: res.__data.schedule[i][j][k][3],
                             relatedOrg: res.__data.groupId,
                             otherInfo: res.__data.id,
+                            fromTo: [null, res.__data.schedule[i][j][k], res.__data.id],
                             code: 12,
                             date: new Date()
                         });
@@ -275,7 +276,7 @@ module.exports = function(Schedule) {
                                             affectorId: userId,
                                             relatedOrg: ctx.args.data.groupId,
                                             fromTo: [findRes.__data.schedule[i][a][b], null, ctx.args.data.id],
-                                            code: 13,
+                                            code: 10,
                                             date: new Date()
                                         });
                                     }
@@ -337,14 +338,14 @@ module.exports = function(Schedule) {
                                                 ctx.args.data.schedule[i][a].splice(b, 1);
                                             }
                                             else {
-                                                hasChanged = false;
+                                                hasChanged = 0;
                                                 if (findRes.__data.schedule && findRes.__data.schedule[i] && findRes.__data.schedule[i][a] && findRes.__data.schedule[i][a][b]) {
-                                                    if (findRes.__data.schedule[i][a][b][0] !== ctx.args.data.schedule[i][a][b][0]) hasChanged = true;
-                                                    if (findRes.__data.schedule[i][a][b][1] !== ctx.args.data.schedule[i][a][b][1]) hasChanged = true;
-                                                    if (findRes.__data.schedule[i][a][b][2] !== ctx.args.data.schedule[i][a][b][2]) hasChanged = true;
-                                                    if (findRes.__data.schedule[i][a][b][3] !== ctx.args.data.schedule[i][a][b][3]) hasChanged = true;
+                                                    if (findRes.__data.schedule[i][a][b][0] !== ctx.args.data.schedule[i][a][b][0]) hasChanged = 1;
+                                                    if (findRes.__data.schedule[i][a][b][1] !== ctx.args.data.schedule[i][a][b][1]) hasChanged = 1;
+                                                    if (findRes.__data.schedule[i][a][b][2] !== ctx.args.data.schedule[i][a][b][2]) hasChanged = 1;
+                                                    if (findRes.__data.schedule[i][a][b][3] !== ctx.args.data.schedule[i][a][b][3]) hasChanged = 2;
                                                     if (!hasChanged && findRes.__data.schedule[i][a][b][4] !== ctx.args.data.schedule[i][a][b][4]) ctx.args.data.schedule[i][a][b][4] = true;
-                                                    if (hasChanged) {
+                                                    if (hasChanged == 1) {
                                                         //spot was altered
                                                         historyArr.push({ //original spot
                                                             effectedId: findRes.__data.schedule[i][a][b][3],
@@ -362,6 +363,25 @@ module.exports = function(Schedule) {
                                                             code: 10,
                                                             date: new Date()
                                                         });
+                                                    } else if(hasChanged === 2) {
+                                                        //spot was changed to a new person
+                                                        historyArr.push({ //original person
+                                                            effectedId: findRes.__data.schedule[i][a][b][3],
+                                                            affectorId: userId,
+                                                            relatedOrg: ctx.args.data.groupId,
+                                                            fromTo: [findRes.__data.schedule[i][a][b], null, ctx.args.data.id],
+                                                            code: 10,
+                                                            date: new Date()
+                                                        });
+                                                        historyArr.push({ //new person
+                                                            effectedId: ctx.args.data.schedule[i][a][b][3],
+                                                            affectorId: userId,
+                                                            relatedOrg: ctx.args.data.groupId,
+                                                            fromTo: [null, ctx.args.data.schedule[i][a][b], ctx.args.data.id],
+                                                            code: 10,
+                                                            date: new Date()
+                                                        });
+                                                        
                                                     }
                                                 }
                                                 else {
@@ -385,13 +405,13 @@ module.exports = function(Schedule) {
                             ctx.args.data.schedule = [
                                 ['Removed']
                             ];
-                            historyArr.push({
-                                affectorId: userId,
-                                relatedOrg: ctx.args.data.groupId,
-                                fromTo: [ctx.args.data.state, 'deleted', ctx.args.data.id],
-                                code: 11,
-                                date: new Date()
-                            });
+                            // historyArr.push({
+                            //     affectorId: userId,
+                            //     relatedOrg: ctx.args.data.groupId,
+                            //     fromTo: [ctx.args.data.state, 'deleted', ctx.args.data.id],
+                            //     code: 11,
+                            //     date: new Date()
+                            // });
                             ctx.args.data.state = 'deleted';
                         }
                         finishSchedUpdate(historyArr);
