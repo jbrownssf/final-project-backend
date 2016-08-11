@@ -1,5 +1,4 @@
 var async = require('async');
-var moment = require('moment-timezone');
 module.exports = function(History) {
     History.remoteMethod('schedHistory', {
         http: {
@@ -40,7 +39,10 @@ module.exports = function(History) {
         var schedId = req.query.filter.where.schedId;
         var tz = req.query.filter.where.tz;
         //TODO: check if the user has permissions
-        req.query.filter = {where:{}};
+        req.query.filter = {
+          where:{},
+          order: 'date DESC'
+        };
         req.query.filter.where.or = [{
           otherInfo: schedId
         }, {
@@ -48,13 +50,6 @@ module.exports = function(History) {
         }];
         History.find(req.query.filter, function(err, response) {
             if (err) return cb(err);
-            
-            //new Date(moment.tz(response[0].__data.date, "America/Los_Angeles").format()).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'});
-            //new Date(moment.tz(date, tz).format()).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'});
-              
-              
-            
-            
             var resArr = [];
             var membersObj = {};
             async.forEachOf(response, function(k, index, next) {
@@ -83,13 +78,17 @@ module.exports = function(History) {
                 switch(response[i].__data.code) {
                   case '9':
                     resArr.push('The date was changed from "' +
-                    new Date(moment.tz(response[i].__data.fromTo[0], tz).format()).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long'}) + 
+                    new Date(Date.parse(response[i].__data.fromTo[0])).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', timeZone: tz}) + 
                     "\" to \"" +
-                    new Date(Date.parse(response[i].__data.fromTo[1])).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long'}) + 
+                    new Date(Date.parse(response[i].__data.fromTo[1])).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', timeZone: tz}) + 
                     '" by ' +
                     membersObj[response[i].__data.affectorId].firstName + 
                     " " +
-                    membersObj[response[i].__data.affectorId].lastName);
+                    membersObj[response[i].__data.affectorId].lastName +
+                    " on " +
+                    new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                    "."
+                    );
                     break;
                   case '10':
                     if(!response[i].__data.fromTo[0]) {
@@ -99,28 +98,34 @@ module.exports = function(History) {
                       " was assigned to \"" + 
                       response[i].__data.fromTo[1][0] + 
                       "\" from " + 
-                      new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       " - " 
-                      + new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      + new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       '" by ' +
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      '.');
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     } else if(!response[i].__data.fromTo[1]) {
                       resArr.push(membersObj[response[i].__data.effectedId].firstName +
                       " " +
                       membersObj[response[i].__data.effectedId].lastName + 
                       " was removed from \"" + response[i].__data.fromTo[0][0] + 
                       "\" during " + 
-                      new Date(Date.parse(response[i].__data.fromTo[0][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      new Date(Date.parse(response[i].__data.fromTo[0][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       " - " + 
-                      new Date(Date.parse(response[i].__data.fromTo[0][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      new Date(Date.parse(response[i].__data.fromTo[0][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       ' by ' +
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      '.');
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     } else {
                       resArr.push(membersObj[response[i].__data.effectedId].firstName +
                       " " +
@@ -128,23 +133,26 @@ module.exports = function(History) {
                       " was moved from \"" + 
                       response[i].__data.fromTo[0][0] + 
                       "\" during " + 
-                      new Date(Date.parse(response[i].__data.fromTo[0][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      new Date(Date.parse(response[i].__data.fromTo[0][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       " - " +
-                      new Date(Date.parse(response[i].__data.fromTo[0][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      new Date(Date.parse(response[i].__data.fromTo[0][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       ' to "' + 
                       response[i].__data.fromTo[1][0] + 
                       '" from ' + 
-                      new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       " - " + 
-                      new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) + 
+                      new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
                       '" by ' +
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
-                      membersObj[response[i].__data.affectorId].lastName);
-                    }// resArr.push('A spot was changed.');
+                      membersObj[response[i].__data.affectorId].lastName +
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
+                    }
                     break;
                   case '11':
-                    // resArr.push('The schedule status was changed.');
                     if(!response[i].__data.fromTo[0]) {
                       //created
                       resArr.push('The schedule was "' +
@@ -153,7 +161,10 @@ module.exports = function(History) {
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      ".");
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     } else if(!response[i].__data.fromTo[1]) {
                       //deleted
                       resArr.push('The schedule was "' +
@@ -162,7 +173,10 @@ module.exports = function(History) {
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      ".");
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     } else {
                       //changed
                       resArr.push('The schedule was changed from "' +
@@ -173,7 +187,10 @@ module.exports = function(History) {
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      ".");
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     }
                     break;
                   case '12':
@@ -183,14 +200,15 @@ module.exports = function(History) {
                     ' saw their spot at "' +
                     response[i].__data.fromTo[1][0] +
                     "\" from " +
-                    new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) +
+                    new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) +
                     " - " +
-                    new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit'}) +
+                    new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) +
                     " on " +
-                    new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
+                    new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
                     '.');
                     break;
                   case '13':
+                    //section changed
                     if(!response[i].__data.fromTo[0]) {
                       resArr.push('The section "' +
                       response[i].__data.fromTo[1] +
@@ -198,7 +216,10 @@ module.exports = function(History) {
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      '.');
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     } else if(!response[i].__data.fromTo[1]) {
                       resArr.push('The section "' +
                       response[i].__data.fromTo[0] +
@@ -206,7 +227,10 @@ module.exports = function(History) {
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      '.');
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     } else {
                       resArr.push('The section name was changed from "' +
                       response[i].__data.fromTo[0] + 
@@ -216,7 +240,10 @@ module.exports = function(History) {
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
-                      '.');
+                      " on " +
+                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      "."
+                      );
                     }
                     break;
                   case '14':
@@ -227,7 +254,11 @@ module.exports = function(History) {
                     '" by ' +
                     membersObj[response[i].__data.affectorId].firstName +
                     " " +
-                    membersObj[response[i].__data.affectorId].lastName);
+                    membersObj[response[i].__data.affectorId].lastName +
+                    " on " +
+                    new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                    "."
+                    );
                     break;
                   default:
                     resArr.push(response[i].__data);
@@ -235,51 +266,6 @@ module.exports = function(History) {
               }
               cb(0, resArr);
             });
-            // History.findOne({
-            //     where: {
-            //         memberId: req.accessToken.userId,
-            //         orgId: req.query.filter.where.orgId
-            //     }
-            // }, function(findErr, findRes) {
-            //     if (findErr) return cb(findErr);
-            //     if(!findRes) {
-            //         var newErr = new Error('You are not already a member.');
-            //         newErr.statusCode = 503;
-            //         return cb(newErr);
-            //     }
-            //     async.forEachOf(response, function(index, i, next) {
-            //             SSFUsers.findOne({
-            //                 where: {
-            //                     id: index.memberId
-            //                 }
-            //             }, function(memberErr, memberRes) {
-            //                 if (memberErr) {
-            //                     next(memberErr);
-            //                 }
-            //                 else {
-            //                     //any member of the company can see this
-            //                     response[i].firstName = memberRes.firstName;
-            //                     response[i].lastName = memberRes.lastName;
-
-            //                     //only owners/admins can see this
-            //                     if (findRes.__data.status === 'admin' || findRes.__data.status === 'owner' || memberRes.__data.id.toString() === req.accessToken.userId) {
-            //                         response[i].email = memberRes.email;
-            //                         response[i].cellphone = memberRes.cellphone;
-            //                         // response[i].address = memberRes.address; // ???
-            //                     }
-            //                     next();
-            //                 }
-            //             });
-            //         },
-            //         function(err) {
-            //             if (err) {
-            //                 var error = new Error('async.forEach operation failed');
-            //                 error.statusCode = 500;
-            //                 cb(error);
-            //             }
-            //             cb(0, response);
-            //         });
-            // });
         });
     };
 };
