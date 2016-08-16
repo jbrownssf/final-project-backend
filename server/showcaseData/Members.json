@@ -1,0 +1,63 @@
+[{
+  "id": "ObjectId(\"57b236d4f64c0f9d579e054e\")",
+  "memberId": "57b23602f64c0f9d579e054c",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "owner",
+  "nickName": "JP"
+}, {
+  "id": "ObjectId(\"57b237dcf64c0f9d579e0552\")",
+  "memberId": "57b23732f64c0f9d579e054f",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "suspended"
+}, {
+  "id": "ObjectId(\"57b23846f64c0f9d579e0556\")",
+  "memberId": "57b23840f64c0f9d579e0553",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "member"
+}, {
+  "id": "ObjectId(\"57b23890f64c0f9d579e055a\")",
+  "memberId": "57b23889f64c0f9d579e0557",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "member"
+}, {
+  "id": "ObjectId(\"57b238b4f64c0f9d579e055e\")",
+  "memberId": "57b238adf64c0f9d579e055b",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "admin",
+  "nickName": "Wolf"
+}, {
+  "id": "ObjectId(\"57b23c65f64c0f9d579e0562\")",
+  "memberId": "57b23c60f64c0f9d579e055f",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "member"
+}, {
+  "id": "ObjectId(\"57b23d62f64c0f9d579e0566\")",
+  "memberId": "57b23d3cf64c0f9d579e0563",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "member"
+}, {
+  "id": "ObjectId(\"57b23d9ef64c0f9d579e056a\")",
+  "memberId": "57b23d9af64c0f9d579e0567",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "pending"
+}, {
+  "id": "ObjectId(\"57b23dd7f64c0f9d579e056e\")",
+  "memberId": "57b23dcef64c0f9d579e056b",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "member"
+}, {
+  "id": "ObjectId(\"57b23e00f64c0f9d579e0572\")",
+  "memberId": "57b23df9f64c0f9d579e056f",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "member"
+}, {
+  "id": "ObjectId(\"57b23e37f64c0f9d579e0576\")",
+  "memberId": "57b23e31f64c0f9d579e0573",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "pending"
+}, {
+  "id": "ObjectId(\"57b23e57f64c0f9d579e057a\")",
+  "memberId": "57b23e53f64c0f9d579e0577",
+  "orgId": "57b236d4f64c0f9d579e054d",
+  "status": "admin"
+}]

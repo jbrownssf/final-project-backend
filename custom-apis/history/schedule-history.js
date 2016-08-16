@@ -37,7 +37,11 @@ module.exports = function(History) {
           return cb(tempError);
         }
         var schedId = req.query.filter.where.schedId;
-        var tz = req.query.filter.where.tz;
+        // var tz = req.query.filter.where.tz;
+        // var tz = 'America/Los_Angeles';
+        var testTz = req.query.filter.where.tz * 1000 * 60;
+        // console.log(testTz);
+        
         //TODO: check if the user has permissions
         req.query.filter = {
           where:{},
@@ -52,11 +56,25 @@ module.exports = function(History) {
             if (err) return cb(err);
             var resArr = [];
             var membersObj = {};
+            // var first = true;
+            function getDateString(time, params, less) {
+              // if(first) {
+              //   console.log(new Date(
+              //     time
+              //   ).getTime() - testTz);
+              //   first = false;
+              // }
+              return new Date(
+                new Date(
+                  time
+                ).getTime() - testTz - (less ? 1000 * 60 * 60 : 0)
+              ).toLocaleString(undefined, params);
+            }
             async.forEachOf(response, function(k, index, next) {
               if(k.__data.effectedId || k.__data.affectorId) {
                 var tempOr = [];
-                if(!membersObj[k.__data.effectedId]) tempOr.push({id: k.__data.effectedId});
-                if(!membersObj[k.__data.affectorId]) tempOr.push({id: k.__data.affectorId});
+                if(k.__data.effectedId && !membersObj[k.__data.effectedId]) tempOr.push({id: k.__data.effectedId});
+                if(k.__data.affectorId && !membersObj[k.__data.affectorId]) tempOr.push({id: k.__data.affectorId});
                 SSFUsers.find({where:{or: tempOr}}, function(findErr, findRes) {
                   if(findErr) {
                     next(findErr);
@@ -74,86 +92,90 @@ module.exports = function(History) {
                 next();
               }
             }, function(err, res) {
+              // if(!res) return cb(0, []);
               for(var i in response) {
                 switch(response[i].__data.code) {
                   case '9':
                     resArr.push('The date was changed from "' +
-                    new Date(Date.parse(response[i].__data.fromTo[0])).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', timeZone: tz}) + 
+                    getDateString(response[i].__data.fromTo[0], {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long'}) + 
                     "\" to \"" +
-                    new Date(Date.parse(response[i].__data.fromTo[1])).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', timeZone: tz}) + 
+                    getDateString(response[i].__data.fromTo[1], {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long'}) + 
                     '" by ' +
                     membersObj[response[i].__data.affectorId].firstName + 
                     " " +
                     membersObj[response[i].__data.affectorId].lastName +
                     " on " +
-                    new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                    getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                     "."
                     );
                     break;
                   case '10':
-                    if(!response[i].__data.fromTo[0]) {
+                    if(!response[i].__data.fromTo[0] || 'null' === response[i].__data.fromTo[0]) {
+                      if(!response[i].__data.effectedId) break;
                       resArr.push(membersObj[response[i].__data.effectedId].firstName + 
                       " " +
                       membersObj[response[i].__data.effectedId].lastName + 
                       " was assigned to \"" + 
                       response[i].__data.fromTo[1][0] + 
                       "\" from " + 
-                      new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
-                      " - " 
-                      + new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
+                      getDateString(response[i].__data.fromTo[1][1], {hour: '2-digit', minute: '2-digit'}, true) + 
+                      " - " +
+                      getDateString(response[i].__data.fromTo[1][2], {hour: '2-digit', minute: '2-digit'}, true) + 
                       '" by ' +
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
-                    } else if(!response[i].__data.fromTo[1]) {
+                    } else if(!response[i].__data.fromTo[1] || 'null' === response[i].__data.fromTo[1]) {
+                      if(!response[i].__data.effectedId) break;
                       resArr.push(membersObj[response[i].__data.effectedId].firstName +
                       " " +
                       membersObj[response[i].__data.effectedId].lastName + 
                       " was removed from \"" + response[i].__data.fromTo[0][0] + 
                       "\" during " + 
-                      new Date(Date.parse(response[i].__data.fromTo[0][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
+                      getDateString(response[i].__data.fromTo[0][1], {hour: '2-digit', minute: '2-digit'}, true) + 
                       " - " + 
-                      new Date(Date.parse(response[i].__data.fromTo[0][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
+                      getDateString(response[i].__data.fromTo[0][2], {hour: '2-digit', minute: '2-digit'}, true) + 
                       ' by ' +
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
                     } else {
+                      if(!response[i].__data.effectedId) break;
                       resArr.push(membersObj[response[i].__data.effectedId].firstName +
                       " " +
-                      membersObj[response[i].__data.effectedId].lastName + 
-                      " was moved from \"" + 
-                      response[i].__data.fromTo[0][0] + 
+                      membersObj[response[i].__data.effectedId].lastName +
+                      " was moved from \"" +
+                      response[i].__data.fromTo[0][0] +
                       "\" during " + 
-                      new Date(Date.parse(response[i].__data.fromTo[0][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
+                      getDateString(response[i].__data.fromTo[0][1], {hour: '2-digit', minute: '2-digit'}, true) + 
                       " - " +
-                      new Date(Date.parse(response[i].__data.fromTo[0][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
+                      getDateString(response[i].__data.fromTo[0][2], {hour: '2-digit', minute: '2-digit'}, true) + 
                       ' to "' + 
                       response[i].__data.fromTo[1][0] + 
                       '" from ' + 
-                      new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
+                      getDateString(response[i].__data.fromTo[1][1], {hour: '2-digit', minute: '2-digit'}, true) + 
                       " - " + 
-                      new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) + 
+                      getDateString(response[i].__data.fromTo[1][2], {hour: '2-digit', minute: '2-digit'}, true) + 
                       '" by ' +
                       membersObj[response[i].__data.affectorId].firstName +
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
                     }
                     break;
                   case '11':
-                    if(!response[i].__data.fromTo[0]) {
+                    if(!response[i].__data.fromTo[0] || 'null' === response[i].__data.fromTo[0]) {
                       //created
                       resArr.push('The schedule was "' +
                       response[i].__data.fromTo[1] + 
@@ -162,10 +184,10 @@ module.exports = function(History) {
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
-                    } else if(!response[i].__data.fromTo[1]) {
+                    } else if(!response[i].__data.fromTo[1] || 'null' === response[i].__data.fromTo[1]) {
                       //deleted
                       resArr.push('The schedule was "' +
                       response[i].__data.fromTo[1] + 
@@ -174,7 +196,7 @@ module.exports = function(History) {
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
                     } else {
@@ -188,7 +210,7 @@ module.exports = function(History) {
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
                     }
@@ -200,16 +222,16 @@ module.exports = function(History) {
                     ' saw their spot at "' +
                     response[i].__data.fromTo[1][0] +
                     "\" from " +
-                    new Date(Date.parse(response[i].__data.fromTo[1][1])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                    getDateString(response[i].__data.fromTo[1][1], {hour: '2-digit', minute: '2-digit'}, true) +
                     " - " +
-                    new Date(Date.parse(response[i].__data.fromTo[1][2])).toLocaleString(undefined, {hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                    getDateString(response[i].__data.fromTo[1][2], {hour: '2-digit', minute: '2-digit'}, true) +
                     " on " +
-                    new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                    getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                     '.');
                     break;
                   case '13':
                     //section changed
-                    if(!response[i].__data.fromTo[0]) {
+                    if(!response[i].__data.fromTo[0] || 'null' === response[i].__data.fromTo[0]) {
                       resArr.push('The section "' +
                       response[i].__data.fromTo[1] +
                       '" was created by ' +
@@ -217,10 +239,10 @@ module.exports = function(History) {
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
-                    } else if(!response[i].__data.fromTo[1]) {
+                    } else if(!response[i].__data.fromTo[1] || 'null' === response[i].__data.fromTo[1]) {
                       resArr.push('The section "' +
                       response[i].__data.fromTo[0] +
                       '" was deleted by ' +
@@ -228,7 +250,7 @@ module.exports = function(History) {
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
                     } else {
@@ -241,7 +263,7 @@ module.exports = function(History) {
                       " " +
                       membersObj[response[i].__data.affectorId].lastName +
                       " on " +
-                      new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                      getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                       "."
                       );
                     }
@@ -256,7 +278,7 @@ module.exports = function(History) {
                     " " +
                     membersObj[response[i].__data.affectorId].lastName +
                     " on " +
-                    new Date(Date.parse(response[i].__data.date)).toLocaleString(undefined, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit', timeZone: tz}) +
+                    getDateString(response[i].__data.date, {year: 'numeric', month: 'short', day: '2-digit', weekday: 'long', hour: '2-digit', minute: '2-digit'}) +
                     "."
                     );
                     break;

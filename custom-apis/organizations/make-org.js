@@ -37,8 +37,8 @@ module.exports = function(Organizations) {
         var Members = Organizations.app.models.Members;
         var SSFUsers = Organizations.app.models.SSFUsers;
         var johnsId = req.accessToken.userId;
-        //checks if the id requested exists or not
-        if(johnsId !== '57906392bfc0e40877eab465') {
+        //TODO: checks if the id requested exists or not
+        if(johnsId !== '57b23602f64c0f9d579e054c') {
           var err = new Error("To create a new organization, you need to be the owner. Contact John Brown at john.p.brown@outlook.com for participating in this app.");
           err.statusCode = 500;
           return cb(err);

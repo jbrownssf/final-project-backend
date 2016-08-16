@@ -66,7 +66,7 @@ module.exports = function(Schedule) {
                 for (var k = res.__data.schedule[i][j].length - 1; k >= 0; k--) {
                     if (!res.__data.schedule[i][j][k]) return cb(new Error('schedule[' + i + '][' + j + '][' + k + '] is undefined.'));
                     if (typeof res.__data.schedule[i][j][k] !== 'object') return cb(new Error('schedule[' + i + '][' + j + '][' + k + '] is not an array.'));
-                    if (res.__data.schedule[i][j][k][3] === userId && !res.__data.schedule[i][j][k][4]) {
+                    if (res.__data.schedule[i][j][k][3] === userId && !res.__data.schedule[i][j][k][4] && res.__data.state !== "saved") {
                         res.__data.schedule[i][j][k][4] = true;
                         didChange = true;
                         History.create({

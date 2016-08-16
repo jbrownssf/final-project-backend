@@ -1,0 +1,62 @@
+[
+  {
+    "affectorId": "57b23602f64c0f9d579e054c",
+    "relatedOrg": "57b236d4f64c0f9d579e054d",
+    "code": "11",
+    "date": "2016-08-16T00:36:47.855Z",
+    "id": "57b2601fe0503efed7d9573d",
+    "fromTo": [
+      "null",
+      "published",
+      "57b2601be0503efed7d95732"
+    ]
+  },
+  {
+    "affectorId": "57b23602f64c0f9d579e054c",
+    "relatedOrg": "57b236d4f64c0f9d579e054d",
+    "code": "11",
+    "date": "2016-08-16T00:36:47.855Z",
+    "id": "57b261e94d2ace0aea217d50",
+    "fromTo": [
+      "null",
+      "published",
+      "57b24410f64c0f9d579e05f1"
+    ]
+  },
+  {
+    "affectorId": "57b23602f64c0f9d579e054c",
+    "relatedOrg": "57b236d4f64c0f9d579e054d",
+    "code": "11",
+    "date": "2016-08-16T00:36:47.855Z",
+    "id": "57b261f54d2ace0aea217d51",
+    "fromTo": [
+      "null",
+      "published",
+      "57b240f0f64c0f9d579e0587"
+    ]
+  },
+  {
+    "affectorId": "57b23602f64c0f9d579e054c",
+    "relatedOrg": "57b236d4f64c0f9d579e054d",
+    "code": "11",
+    "date": "2016-08-16T00:36:47.855Z",
+    "id": "57b261ff4d2ace0aea217d52",
+    "fromTo": [
+      "null",
+      "published",
+      "57b2410ff64c0f9d579e0592"
+    ]
+  },
+  {
+    "affectorId": "57b23602f64c0f9d579e054c",
+    "relatedOrg": "57b236d4f64c0f9d579e054d",
+    "code": "11",
+    "date": "2016-08-16T00:36:47.855Z",
+    "id": "57b262064d2ace0aea217d53",
+    "fromTo": [
+      "null",
+      "published",
+      "57b2414cf64c0f9d579e059d"
+    ]
+  }
+]

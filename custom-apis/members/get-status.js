@@ -43,7 +43,11 @@ module.exports = function(Members) {
                     if(orgErr) {
                         next(orgErr);
                     } else {
-                        response[i].orgName = orgRes.name;
+                        if(orgRes === null) {
+                            orgRes = [];
+                        } else {
+                            response[i].orgName = orgRes.name;
+                        }
                         next();
                     }
                 });
