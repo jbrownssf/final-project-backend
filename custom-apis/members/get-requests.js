@@ -15,9 +15,9 @@ module.exports = function(Members) {
 //     rest: '??',
 //     shared: '??'
 // }
+
     Members.remoteMethod('getRequests', {
         http: {path: '/getRequests', verb: 'GET'},
-        // notes: "If you pass in the 'requestId' you do not need the other two fields.",
         description: "Handle a request to join an Organizations.",
         accepts: [
             {arg: 'req', type: 'object', 'http': {source: 'req'}},
@@ -25,6 +25,7 @@ module.exports = function(Members) {
         ],
         returns: {type: 'object', root: true}
     });
+    
     Members.getRequests = function(req, res, cb) {
         var SSFUsers = Members.app.models.SSFUsers;
         Members.find(req.query.filter, function(err, response) {
@@ -41,10 +42,7 @@ module.exports = function(Members) {
                         response[i].orgName = memberRes.name;
                         next();
                     }
-                    
                 });
-                
-                
             }, function(err) {
             	if(err) {
             		var error = new Error('async.forEach operation failed');
@@ -55,4 +53,5 @@ module.exports = function(Members) {
             });
         });
     };
+    
 };

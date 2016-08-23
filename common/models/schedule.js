@@ -39,7 +39,10 @@ module.exports = function(Schedule) {
             }, function(memErr, memRes) {
                 if (memErr)
                     return next(memErr);
-                if (memRes.length === 0 || memRes[0].__data.status === 'pending' || memRes[0].__data.status === 'declined') {
+                if (memRes.length === 0 || 
+                    memRes[0].__data.status === 'pending' || 
+                    memRes[0].__data.status === 'declined') {
+
                     var err = new Error("Unauthorized to perform this action");
                     err.status = 401;
                     next(err);
@@ -49,6 +52,7 @@ module.exports = function(Schedule) {
                 }
             });
         }
+        
     });
 
     Schedule.afterRemote('findOne', function(ctx, res, cb) {
