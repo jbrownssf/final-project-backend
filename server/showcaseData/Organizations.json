@@ -1,1 +1,6 @@
-[{ "id" : "57b236d4f64c0f9d579e054d", "status" : "open", "name" : "Haunted Trail", "ownerId" : "57b23602f64c0f9d579e054c" }]
+[{
+  "id": "57b236d4f64c0f9d579e054d",
+  "status": "open",
+  "name": "Haunted Trail",
+  "ownerId": "57b23602f64c0f9d579e054c"
+}]

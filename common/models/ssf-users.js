@@ -1,5 +1,6 @@
+var pendingCount = require('../../custom-apis/ssf-users/pending-count.js');
 module.exports = function(SsfUsers) {
-
+    pendingCount(SsfUsers);
     SsfUsers.observe('after save', function(ctx, next) {
         if(ctx.isNewInstance === true) {
             var instance = ctx.instance;
@@ -10,7 +11,7 @@ module.exports = function(SsfUsers) {
                 next();
             });
         } else {
-             next();
+            next();
         }
     });
     SsfUsers.beforeRemote('*.updateAttributes', function(context, instance, next) {
