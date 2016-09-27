@@ -219,7 +219,7 @@ module.exports = function(History) {
                     resArr.push(membersObj[response[i].__data.affectorId].firstName +
                     " " +
                     membersObj[response[i].__data.affectorId].lastName +
-                    ' saw their spot at "' +
+                    ' saw their job at "' +
                     response[i].__data.fromTo[1][0] +
                     "\" from " +
                     getDateString(response[i].__data.fromTo[1][1], {hour: '2-digit', minute: '2-digit'}, true) +

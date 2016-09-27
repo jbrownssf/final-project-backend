@@ -100,6 +100,8 @@ module.exports = function(SSFUsers) {
             }
           }
         }
+        
+        if(!returnObj[orgId]) returnObj[orgId] = {};
         returnObj[orgId].unseenCount = count;
         // console.log(returnObj);
         
